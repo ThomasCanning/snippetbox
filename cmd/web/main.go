@@ -7,11 +7,6 @@ import (
 	"os"
 )
 
-type config struct {
-	addr      string
-	staticDir string
-}
-
 // holds application wide dependencies
 type application struct {
 	errorLog *log.Logger
