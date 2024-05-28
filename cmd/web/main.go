@@ -18,21 +18,24 @@ type application struct {
 }
 
 func main() {
+
+	//Flags that can be adjusted when run from terminal
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
-
 	flag.Parse()
 
+	//Custom logging functions
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
+	//Creates an instance of the database
 	db, err := openDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-
 	defer db.Close()
 
+	//Application holds information used throughout app, such as custom errors and a slice of snippets
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,

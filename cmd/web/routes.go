@@ -2,6 +2,10 @@ package main
 
 import "net/http"
 
+/*
+Used for keeping track of the pages and resources of the website
+*/
+
 func (app *application) routes() *http.ServeMux {
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))

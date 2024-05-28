@@ -4,9 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ThomasCanning/snippetbox/internal/models"
+	"html/template"
 	"net/http"
 	"strconv"
 )
+
+/*
+Each page has a handler that takes in a http writer and a request path. Checks can be done on the request path to make sure requested path is correct, e.g. for subtree paths restricting their catch-all behaviour.
+The rest of the function then dictates what happens on that page, with the http writer being used to write to the page.
+*/
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" { //has effect of overwriting subtree behavior to make it exact path match
@@ -25,7 +31,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*
-
 		files := []string{"./ui/html/pages/home.tmpl", "./ui/html/base.tmpl", "./ui/html/partials/nav.tmpl"}
 		ts, err := template.ParseFiles(files...)
 		if err != nil {
@@ -46,6 +51,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+
 	snippet, err := app.snippets.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
@@ -56,8 +62,24 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Write the snippet data as a plain-text HTTP response body.
-	fmt.Fprintf(w, "%+v", snippet)
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/view.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data := &templateData{
+		Snippet: snippet,
+	}
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {

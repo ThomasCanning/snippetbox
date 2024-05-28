@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+/*Functionality relating to the snippet object
+ */
+
 type Snippet struct {
 	ID      int
 	Title   string
@@ -14,7 +17,7 @@ type Snippet struct {
 	Expires time.Time
 }
 
-// SnippetModel Define a SnippetModel type which wraps a sql.DB connection pool.
+// SnippetModel Defines a SnippetModel type which wraps a sql.DB connection pool.
 type SnippetModel struct {
 	DB *sql.DB
 }
