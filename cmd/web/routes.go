@@ -6,7 +6,7 @@ import "net/http"
 Used for keeping track of the pages and resources of the website
 */
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 
@@ -15,5 +15,5 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/snippet/view", app.snippetView)                //fixed path, so it will only match the exact path "/snippet/view"
 	mux.HandleFunc("/snippet/create", app.snippetCreate)            //longer patterns take precedence over shorter ones
 
-	return mux
+	return secureHeaders(mux)
 }
