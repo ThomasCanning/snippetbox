@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"github.com/justinas/alice"
+	"net/http"
+)
 
 /*
 Used for keeping track of the pages and resources of the website
@@ -15,6 +18,10 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/snippet/view", app.snippetView)                //fixed path, so it will only match the exact path "/snippet/view"
 	mux.HandleFunc("/snippet/create", app.snippetCreate)            //longer patterns take precedence over shorter ones
 
-	// Wrap the existing chain with the recoverPanic middleware.
-	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
+	// Create a middleware chain containing our 'standard' middleware
+	// which will be used for every request our application receives.
+	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+
+	// Return the 'standard' middleware chain followed by the servemux.
+	return standard.Then(mux)
 }
